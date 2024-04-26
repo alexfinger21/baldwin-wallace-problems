@@ -47,8 +47,14 @@ int main() {
         }
 
 
+        int biggestB = 0;
+
         for (int c = 0; c < numArr.size(); ++c) {
             int bb = findBiggestBit(numArr[c]);
+            if (bb > biggestB) {
+                biggestB = bb;
+            }
+            
             if (bb != -1) {
                 freq[bb].push_back(c);
             }
@@ -59,8 +65,8 @@ int main() {
             for (int j = i+1; j<numArr.size(); ++j) {
                 res ^= numArr[j];
 
-                for (int z = 0; z >= sizeof(int)*8 - 1; --z) {
-                    if ((int(pow(2, z)) & res) != int(pow(2, z))) {
+                for (int z = biggestB; z >= 0; --z) {
+                    if ((int(pow(2, z)) & res) == 0) {
                         count += checkRange(i, j, freq[z]);      
                     }
                 }
@@ -72,4 +78,3 @@ int main() {
 
     return 0;
 }
-
