@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include <vector>
 #include <cmath>
 
@@ -17,14 +18,22 @@ int checkRange(int s, int e, vector<int> &bits) {
     return res;
 }
 
-int findBiggestBit(int n) {
+int addNum(int n, int indx, vector<pair<int, bool>> (&freq)[]) {
+    bool found = false;
     for (int i = sizeof(int)*8 - 1; i >= 0; --i) {
         if (pow(2, i) <= n) {
-            return i;
+            if (!found) {
+                freq[i].push_back(make_pair(indx, true));
+                found = true;
+            } else {
+                freq[i].push_back(make_pair(indx, false));
+            }
+            
+            n -= pow(2, i);
         }
     }
 
-    return -1;
+    return 0;
 }
 
 int main() {
@@ -36,40 +45,52 @@ int main() {
         cin >> nums;
 
         int count = 0;
-        vector<int> numArr;
 
-        vector<int> freq[sizeof(int) * 8];
-        
-        for (int num = 0; num < nums; ++num) {
-            int n;
-            cin >> n;
-            numArr.push_back(n);
+        int prev = 0;
+        int prevs[nums];
+        vector<pair<int, bool>> freq[sizeof(int) * 8];
+       
+        for (int i = 0; i<nums; ++i) {
+            prevs[i] = 0;
         }
 
+        for (int n = 0; n < nums; ++n) {
+            int num;
+            cin >> num;
 
-        int biggestB = 0;
+            addNum(num, n, freq);   
+            for (int i = sizeof(int)*8 - 1; i >= 0; --i) {
+                if ((int(pow(2, i)) & num) != 0) {//there's a bit there
+                    //cout << "NUMBER: " << i << ' ' << num << endl;
 
-        for (int c = 0; c < numArr.size(); ++c) {
-            int bb = findBiggestBit(numArr[c]);
-            if (bb > biggestB) {
-                biggestB = bb;
-            }
-            
-            if (bb != -1) {
-                freq[bb].push_back(c);
-            }
-        }
+                    if (!(freq[i].empty())) {
+                        //cout << "HEARE" << endl;
+                        for (auto p = freq[i].rbegin(); p != freq[i].rend(); ++p) {
+                            //cout << (*p).first << ' ' << ((*p).second == true) << endl;
+                            if ((*p).first == 1 && (n == 2)) {
+                                cout << "FAIL CASE" << endl;
+                            }
 
-        for (int i = 0; i<numArr.size(); ++i) {
-            int res = numArr[i];
-            for (int j = i+1; j<numArr.size(); ++j) {
-                res ^= numArr[j];
-
-                for (int z = biggestB; z >= 0; --z) {
-                    if ((int(pow(2, z)) & res) == 0) {
-                        count += checkRange(i, j, freq[z]);      
+                            if ((*p).second == true && (int(pow(2, i)) & (prevs[(*p).first] ^ prev)) != 0) { //also a bit on the previous combinations
+                                cout << (*(p - 1)).first << ' ' << (*p).first << ' ' << n << endl;
+                                if (((p - 1)) != freq[i].rend()) {
+                                    count += (*p).first - (*(p - 1)).first; //add the difference
+                                } else {
+                                    ++count;
+                                }
+                            }
+                        }
                     }
-                }
+                }    
+            }
+
+            prev ^= num;
+            prevs[n] = prev;
+        }
+
+        for (int i = 0; i<sizeof(int) * 8; ++i) {
+            for (auto j : freq[i]) {
+                //cout << j.first << j.second << endl;
             }
         }
 
