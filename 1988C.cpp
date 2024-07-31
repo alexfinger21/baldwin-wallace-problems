@@ -3,6 +3,9 @@
 using ll=long long;
 using namespace std;
 
+//basically the first number is one with a bit below the highest bit and anywhere else, and then the numbers progress moving the 0 bit 1 back because after the first number you can make the 2nd biggest bit 0
+// and so on, then the 3rd bit, etc
+
 int32_t main() {
     int t;
     cin >> t;
