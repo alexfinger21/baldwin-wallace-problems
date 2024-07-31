@@ -3,9 +3,7 @@
 using ll=long long;
 using namespace std;
 
-//basically the first number is one with a bit below the highest bit and anywhere else, and then the numbers progress moving the 0 bit 1 back because after the first number you can make the 2nd biggest bit 0
-// and so on, then the 3rd bit, etc
-
+//get the popcount (1s count) after the largest bit, if its 0 then only 1 combination, otherwise, the answer is the popcount + 1
 int32_t main() {
     int t;
     cin >> t;
