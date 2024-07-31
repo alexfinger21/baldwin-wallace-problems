@@ -3,7 +3,7 @@
 using ll=long long;
 using namespace std;
 
-//get the popcount (1s count) after the largest bit, if its 0 then only 1 combination, otherwise, the answer is the popcount + 1
+//get the popcount (1s count) after the largest bit, if its 0 then only 1 combination, otherwise, the answer is the total popcount + 1
 int32_t main() {
     int t;
     cin >> t;
