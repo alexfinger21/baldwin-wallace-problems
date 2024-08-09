@@ -14,8 +14,8 @@ int32_t main() {
         vector<string> answers;
 
         for (int a = 1; a<=10000; ++a) {
-            int minB = n.size()*a-6;
-            int maxB = n.size()*a-1;
+            int minB = n.size()*a-6; //at the smallest b the number can't go over 6 digits, strictly less than 10^6 b/c highest a*n == 10^6 - b which is at least 1
+            int maxB = n.size()*a-1; //b can't leave 0 characters left
 
             for (int b = max(1, minB); b<=maxB; ++b) {
                 string comp = "";
