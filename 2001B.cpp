@@ -10,23 +10,18 @@ int32_t main() {
     cin >> t;
 
     while (t--) {
-        int n, k;
-        cin >> n >> k;
-
-        int arr[n][n];
-
-        for (int i = 0; i<n; ++i) {
-            for (int j = 0; j<n; ++j) {
-                char num;
-                cin >> num;
-
-                arr[i][j] = num - '0';
-            }
-        }
-
-        for (int i = 0; i<n; i+=k) {
-            for (int j = 0; j<n; j+=k) {
-                cout << arr[i][j];
+        int n;
+        cin >> n;
+        
+        if (!(n%2)) {
+            cout << "-1\n";
+        } else {
+            for (int i = 1; i<=n; ++i) {
+                if (i < (n+1)/2) {
+                    cout << i << ' ';
+                } else {
+                    cout << n - i + (n+1)/2 << ' ';
+                }
             }
 
             cout << '\n';
