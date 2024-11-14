@@ -15,7 +15,7 @@ int32_t main() {
         priority_queue<ll> pq;
        
         ll ans = 1;
-        for (ll i = 2; i*i<=x; ++i) {
+        for (ll i = 1; i*i<=x; ++i) {
             if (!(x%i)) {
                 if (x/i >= n) {
                     ans = max(ans, i);
