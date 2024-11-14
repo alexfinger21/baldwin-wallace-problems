@@ -2,7 +2,7 @@
 
 using ll=long long;
 using namespace std;
-
+//basically a gcd of all the sums means that the gcd has to be a divisor of x, and then its simple. If it's a divisor of x, find the biggest divisor which occurs in x at least n times. 
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
