@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
+
+using ll=long long;
 using namespace std;
-using ll = long long;
 
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-
     int t;
     cin >> t;
 
@@ -14,95 +14,61 @@ int32_t main() {
         cin >> n >> m >> v;
 
         vector<ll> a(n);
-        ll total_sum = 0;
-        for (int i = 0; i < n; ++i) {
+        ll tot = 0;
+
+        for (int i = 0; i<n; ++i) {
             cin >> a[i];
-            total_sum += a[i];
+            tot += a[i];
         }
 
-        // Step 1: Build mfront array (max creatures satisfied from the front)
-        vector<ll> psbf(n+1, 1e9+1);
-        psbf[0] = 0;
-        vector<int> mfront(n, 0);
-        ll s = 0;
-        ll current_sum = 0;
-        int creatures_from_front = 0;
-        for (int i = 0; i < n; ++i) {
-            s += a[i];
-            current_sum += a[i];
-            if (current_sum >= v) {
-                creatures_from_front++;
-                current_sum = 0;
+        vector<ll> f_sm(n);
+        vector<ll> min_per_m(n+1, -1);
+        ll n_fw = 0;
+
+        ll cnt = 0;
+        for (int i = 0; i<n; ++i) {
+            f_sm[i] = a[i] + (i>0 ? f_sm[i-1] : 0);
+            cnt += a[i];
+
+            if (cnt >= v) {
+                ++n_fw;
+                cnt = 0;
+                min_per_m[n_fw] = i; 
             }
-            mfront[i] = creatures_from_front;
-            psbf[creatures_from_front] = min(s, psbf[creatures_from_front]);
-
         }
 
-        // Step 2: Build mback array (max creatures satisfied from the back)
-        vector<ll> psb(n+1, 1e9+1);
-        s = 0;
-        vector<int> mback(n, 0);
-        current_sum = 0;
-        int creatures_from_back = 0;
-        for (int i = n - 1; i >= 0; --i) {
-            s += a[i];
-            current_sum += a[i];
-            if (current_sum >= v) {
-                creatures_from_back++;
-                current_sum = 0;
+        vector<ll> min_per_mb(n+1, -1);
+        min_per_mb[0] = -2;
+        vector<ll> b_sm(n);
+        n_fw = 0;
+
+        cnt = 0;
+        for (int i = n-1; i>=0; --i) {
+            b_sm[i] = a[i] + (i<n-1 ? b_sm[i+1] : 0);
+            cnt += a[i];
+
+             if (cnt >= v) {
+                ++n_fw;
+                min_per_mb[n_fw] = i; 
+                cnt = 0;
             }
-            mback[i] = creatures_from_back;
-            psb[creatures_from_back] = min(s, psb[creatures_from_back]);
         }
 
-        /*
-           cout << "mfront: ";
-           for (int i = 0; i < n; ++i) {
-           cout << mfront[i] << " ";
-           }
-           cout << endl;
+        ll res = -1;
+        for (int i = 0; i<=m; ++i) {
+            ll prev = i != 0 ? min_per_m[i] : 0;
+            ll post = min_per_mb[m-(i == -1 ? 0 : i)];
+            //cout << prev << ' ' << i << ' ' << post << endl;
+            //cout << f_sm[prev] << ' ' << i << ' ' << b_sm[post] << endl;
+            if (post != -1 && prev != -1) {
+                res = max(res, tot - (i != 0 ? f_sm[prev] : 0) - (post > -1 ? b_sm[post] : 0));
 
-        // Printing mback array
-        cout << "mback: ";
-        for (int i = 0; i < n; ++i) {
-        cout << mback[i] << " ";
-        }
-
-        // Calculate prefix sum from the back
-
-        cout << endl;
-        */
-        // Step 3: Calculate maximum tastiness Alice can get
-        ll max_alice_sum = -1;
-
-        // Try every possible split point
-        ll prefix_sum = 0;
-        for (int i = 0; i < n; ++i) {
-
-            // Number of creatures satisfied from the front up to index i
-            int front_creatures = mfront[i];
-
-            // Remaining creatures need to be satisfied from the back
-            int required_from_back = m - front_creatures;
-
-            // Check if we can satisfy the required creatures from the back
-            if (i + 1 < n && mback[i + 1] >= required_from_back && required_from_back >= 0) {
-                // Calculate Alice's possible sum
-                ll sum_from_front = psbf[front_creatures]; // Alice's sum from the front up to i
-                ll sum_from_back = total_sum - sum_from_front; // Remaining part after index i
-                ll alice_sum = sum_from_back - (required_from_back > 0 ? psb[required_from_back] : 0);
-                //cout << sum_from_front << ' ' << sum_from_back << ' ' << psb[required_from_back] << ' ' << required_from_back << ' ' << alice_sum << endl;
-                max_alice_sum = max(max_alice_sum, alice_sum);
             }
-            prefix_sum += a[i];
         }
 
-        // Special case: Check if we can satisfy all creatures from just the front or just the back
+        cout << res << '\n';
 
-        cout << max_alice_sum << "\n";
     }
 
     return 0;
 }
-
