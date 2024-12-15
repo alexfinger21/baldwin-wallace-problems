@@ -12,23 +12,39 @@ int32_t main() {
     while (t--) {
         ll n, k;
         cin >> n >> k;
-
-        vector<ll> res(n);
-
-        bool found = false;
-        ll prev = 0;
-        for (int i = n-1; i>=0; --i) {
-            ll comp = 2 * Math.pow(2, min(n - i - 1, i));
-            if (k <= prev+comp) {
-                found = true;
-                ll rl = k - comp;
-
-                for (int i = 0; i<n; ++i) {
-                }
-                break;
-            }
-            prev += comp;
+        
+        if (n <= 61 && 1LL << (n-1) < k) {
+            cout << "-1\n";
+            continue;
         }
+
+        vector<int> res(n);
+
+        int f = 0, b = n-1;
+
+        --k;
+
+        vector<short> d(n);
+        for (int i = 1; i<n; ++i) {
+            d[i] = k%2;
+            k /= 2;
+        }
+
+        for (int i = n-1; i>=0; --i) {
+            if (d[i]) {
+                res[b] = n-i;
+                --b;
+            } else {
+                res[f] = n-i;
+                ++f;
+            }
+        }
+
+        for (auto x : res) {
+            cout << x << ' ';
+        }
+
+        cout << '\n';
     }
 
     return 0;
