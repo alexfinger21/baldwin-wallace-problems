@@ -1,10 +1,11 @@
-#include <iostream>
 #include <bits/stdc++.h>
 
-using namespace std;
 using ll=long long;
+using namespace std;
 
-int main() {
+int32_t main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     int t;
     cin >> t;
 
@@ -12,33 +13,39 @@ int main() {
         int n;
         cin >> n;
 
-        vector<ll> a(n);
+        vector<vector<int>> dp(n, vector<int>(n+1, 0));
+
+        vector<int> a(n);
 
         for (int i = 0; i<n; ++i) {
             cin >> a[i];
         }
 
-        vector<vector<ll>> dp(n+1);
-
         for (int i = 0; i<n; ++i) {
-            dp[i] = vector<ll>(n+1);
+            for (int j = 0; j<=i+1; ++j) {
+                int right = n-i+j-1;
+                if (j == 0 && i == 0) {
+                    dp[i][j] = a[right]*(i+1);
+                    continue;
+                }
+                if (j <= i) {
+                    dp[i][j] = a[right]*(i+1) + dp[i-1][j];
+                }
+
+                if (j > 0) {
+                    dp[i][j] = max(dp[i][j], (i > 0 ? dp[i-1][j-1] : 0) + a[j-1] * (i+1));
+                }
+             }
         }
 
-        dp[0][n-1] = a[n-1];
+        int res = 0;
 
-        for (int i = 0; i<n; ++i) {
-            for (int j = 0; j<=i; ++j) {
-                dp[j+1][n-i-1] = max(dp[j+1][n-i-1], dp[j][n-i] + (j+1)*a[j]);
-                dp[j+1][n-i-1] = max(dp[j+1][n-i-1], dp[j+1][n-i] + (j+1)*a[j+n-i-1]);
-            }
+        for (int i = 0; i<=n; ++i) {
+            res = max(res, dp[n-1][i]);
         }
 
-        for (auto x : dp) {
-            for (auto z : x) {
-                cout << z << ' ';
-            }
-            cout << endl;
-        }
+        cout << res << '\n';
     }
+
     return 0;
 }
