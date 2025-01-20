@@ -18,39 +18,30 @@ int32_t main() {
         cin >> a[i];
     }
 
-    map<ll, ll> divs;
-    map<ll, ll> totl;
+    vector<ll> totl(n+1);
 
-    divs[1] = 1;
+    totl[0] = 1;
     totl[1] = 1;
 
     ll res = 1;
 
     for (int i = 1; i<n; ++i) {
-       for (int j = 2; j<=n, j<=i+1; ++j) {
-            if (divs.count(j-1)) {
-                if (!(a[i] % j)) {
-                    //cout << "whats up sigmas" << endl;
-                    if (!divs.count(j)) {
-                        divs[j] = 1;
-                    } else {
-                        divs[j] += 1;
-                    }
-                    if (!totl.count(j)) {
-                        totl[j] = 0;
-                    }
-                    totl[j] = (totl[j] + (totl[j-1])) % mod;
-                    cout << a[i] << ' ' << j << ' ' << divs[j] << ' ' << totl[j-1] << ' ' << totl[j] << endl;
-                    res = (res + totl[j-1]) % mod;
+      
+       for (ll j = min((ll)sqrt(a[i]), n); j>=1; --j) {
+            if (!(a[i] % j)) {
+                if (a[i]/j <= n && a[i]/j != j) {
+                    totl[a[i]/j] = (totl[a[i]/j] + (totl[a[i]/j-1])) % mod;
+                    //cout << "val: " << a[i] << " divisor: " << a[i]/j << " current combs:" << totl[a[i]/j] << endl;
+                    res = (res + totl[a[i]/j-1]) % mod;
                 }
-            } else {
-                break;
+                totl[j] = (totl[j] + (totl[j-1])) % mod;
+                //cout << "val: " << a[i] << " divisor: " << j << " prev combs:" << totl[j-1] << " current combs:" << totl[j] << endl;
+                res = (res + totl[j-1]) % mod;
             }
        } 
-       totl[1] += 1;
-       divs[1] += 1;
-       res = (res + 1) % mod;
+       //cout << res << endl;
     }
+
 
     cout << res << '\n';
 
