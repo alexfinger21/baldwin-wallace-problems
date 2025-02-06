@@ -17,29 +17,15 @@ bool recurr(ll nm, map<ll, ll> &nms) {
         --n;
         return true;
     } else if (nm > 1) {
-        --numChecked;
-        if (nm % 2) {
-            //cout << nm << " checked odd: " << numChecked << endl;
-            numChecked += 2;
-            bool r1 = recurr(nm/2, nms);
-            bool r2 = recurr(nm/2 + 1, nms);
+        //cout << nm << " checked odd: " << numChecked << end;
+        ++numChecked;
+        bool r1 = recurr(nm/2, nms);
+        bool r2 = recurr((nm+1)/2, nms);
 
-            if (!r1 || !r2) {
-                return false;
-            } else {
-                return true;
-            }
+        if (!r1 || !r2) {
+            return false;
         } else {
-            //cout << nm << " checked: " << numChecked << endl;
-            numChecked += 2;
-            bool r1 = recurr(nm/2, nms);
-            bool r2 = recurr(nm/2, nms);
-
-            if (!r1 || !r2) {
-                return false;
-            } else {
-                return true;
-            }
+            return true;
         }
     }
 
