@@ -3,13 +3,13 @@
 using ll=long long;
 using namespace std;
 
-ll mod = 998244353;
+int MOD = 998244353;
 
-ll mod_inv(ll x, ll m) {
-    ll res = 1, y = m - 2;
+ll mod_inv(ll x) {
+    ll res = 1, y = MOD - 2;
     while (y) {
-        if (y & 1) res = res * x % m;
-        x = x * x % m;
+        if (y & 1) res = res * x % MOD;
+        x = x * x % MOD;
         y >>= 1;
     }
     return res;
@@ -40,105 +40,38 @@ int32_t main() {
             b1[i] = b[i];
         }
 
+        ll res = 1;
+
         sort(a.begin(), a.end());
         sort(b.begin(), b.end());
 
-        vector<ll> a_c(n);
-        vector<ll> b_c(n);
-        map<ll, ll> latest_idx_a;
-        map<ll, ll> latest_idx_b;
-
-        a_c = a;
-        b_c = b;
-
         for (int i = 0; i<n; ++i) {
-            auto af = find(a.begin(), a.end(), a1[i]);
-
-            if (!latest_idx_a.count(a1[i])) {
-                latest_idx_a[a1[i]] = af - a.begin();
-            } else {
-                latest_idx_a[a1[i]] = max(latest_idx_a[a1[i]], (ll)(af-a.begin()));
-            }
-
-            a1[i] = af - a.begin();
-            *af = -1;
-
-            auto bf = find(b.begin(), b.end(), b1[i]);
-
-            if (!latest_idx_b.count(b1[i])) {
-                latest_idx_b[b1[i]] = bf - b.begin();
-            } else {
-                latest_idx_b[b1[i]] = max(latest_idx_b[b1[i]], (ll)(bf-b.begin()));
-            }
-
-            b1[i] = bf - b.begin();
-            *bf = -1;
+            res = (res * min(a[i], b[i])) % MOD;
         }
-        a = a_c;
-        b = b_c;
-
-        ll res = 1;
-
-        for (int i = 0; i<n; ++i) {
-            res = (res * min(a[i], b[i])) % mod;
-        }
-
         cout << res << ' ';
-        
-        /*
-        for (auto x : a) {
-            cout << x << ' ';
-        }
-        cout << endl;
-
-        for (auto x : b) {
-            cout << x << ' ';
-        }
-        cout << endl;
-        */
 
         for (int i = 0; i<q; ++i) {
             int o, x;
             cin >> o >> x;
 
             if (o - 1) {
-                ll idx = latest_idx_b[b[b1[x-1]]];
-                --latest_idx_b[b[b1[x-1]]];
-                b1[x-1] = idx;
+                int idx = upper_bound(b.begin(), b.end(), b1[x-1]) - b.begin() - 1;
+                if (b[idx] < a[idx]) {
+                    res = ((res * mod_inv(b[idx]) % MOD) * (b[idx]+1)) % MOD;
+                }
                 ++b[idx];
-                //cout << "b " << idx << ' ' << b[idx] << ' ' << a[idx] << endl;
-                if (b[idx] <= a[idx]) {
-                    res = (res * mod_inv(b[idx] - 1, mod) % mod * b[idx]) % mod;
-                }
-                if (!latest_idx_b.count(b[idx])) {
-                    latest_idx_b[b[idx]] = idx;
-                }
+                ++b1[x-1];
             } else {
-                ll idx = latest_idx_a[a[a1[x-1]]];
-                --latest_idx_a[a[a1[x-1]]];
-                a1[x-1] = idx;
+                int idx = upper_bound(a.begin(), a.end(), a1[x-1]) - a.begin() - 1;
+                if (b[idx] > a[idx]) {
+                    res = ((res * mod_inv(a[idx]) % MOD) * (a[idx]+1)) % MOD;
+                }
                 ++a[idx];
-                //cout << "a " << idx << ' ' << b[idx] << ' ' << a[idx] << endl;
-                if (a[idx] <= b[idx]) {
-                    res = (res * mod_inv(a[idx] - 1, mod) % mod * a[idx]) % mod;
-                }
-                if (!latest_idx_a.count(a[idx])) {
-                    latest_idx_a[a[idx]] = idx;
-                }
+                ++a1[x-1];
             }
             cout << res << ' ';
-            /*
-            for (auto x : a) {
-                cout << x << ' ';
-            }
-            cout << endl;
-
-            for (auto x : b) {
-                cout << x << ' ';
-            }
-            cout << endl;
-            */
         }
+
         cout << '\n';
     }
 
