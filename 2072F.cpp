@@ -9,91 +9,42 @@ int32_t main() {
     int t;
     cin >> t;
 
+    vector<int> facs2(1e6+1);
+    facs2[0] = 0;
+
+    for (int i = 1; i<=1e6; ++i) {
+        int mx = 1;
+        int tf = 0;
+        int rs = 0;
+        while (mx <= i) {
+            if (!(i % mx)) {
+                rs = tf;
+            } else {
+                break;
+            }
+            ++tf;
+            mx *= 2;
+        }
+
+        facs2[i] = rs + facs2[i-1];
+    }
+
     while (t--) { 
         int n, k;
         cin >> n >> k;
         
         string ks = to_string(k);
         string res = "";
-        string tr = "";
-        int ps = 0;
-        int cnt = n/4 - 1;
-        for (int i = 0; i<32; ++i) {
-            cnt -= pow(2, i);
-            if (cnt >= 0) {
-                ++ps;
+        
+        for (int i = 0; i<n; ++i) {
+            if (facs2[n-1] == (facs2[i] + facs2[n-i-1])) {
+                res += ks + ' ';
             } else {
-                break;
+                res += "0 ";
             }
-        }
-        int h = !ps ? n : ((n-pow(2, ps)*4));
-        if (h >= 4) {
-            h %= 4;
-        }
-        int tc = (n-pow(2, ps)*4)/4;
-        if ((int)(n-pow(2, ps)*4) % 4) {
-            ++tc;
-        }
-
-        if (h == 0) {
-            h = 4;
-        }
-
-        if (n == pow(2, ps)*4) {
-            for (int i = 0; i<n; ++i) {
-                res += ks +' ';
-            }
-            cout << res << '\n';
-            continue;
-        }
-
-        if (h == 1) {
-            tr = ks + " 0 0 0";
-        } else if (h == 2) {
-            tr = ks + ' ' + ks + " 0 0";
-        } else if (h == 3) {
-            tr = ks + " 0 " + ks + " 0";
-        } else {
-            tr = ks + ' ' + ks + ' ' + ks + ' ' + ks;
-        }
-
-        for (int i = 0; i<tc-1; ++i) {
-            res += tr + ' ';
         } 
 
-        if (h == 1) {
-            res += ks + ' ';
-        } else if (h == 2) {
-            res += ks + ' ' + ks + " ";
-        } else if (h == 3) {
-            res += ks + " 0 " + ks + " ";
-        } else {
-            res += ks + ' ' + ks + ' ' + ks + ' ' + ks + ' ';
-        }
-
-
-        for (int i = 0; i<n-(max(0,(tc-1)*4*2) + h*2); ++i) {
-            res += "0 ";
-        }
-        
-        if (n > 4) {
-            for (int i = 0; i<tc-1; ++i) {
-                res += tr + ' ';
-            }
-
-            if (h == 1) {
-                res += ks + ' ';
-            } else if (h == 2) {
-                res += ks + ' ' + ks + " ";
-            } else if (h == 3) {
-                res += ks + " 0 " + ks + " ";
-            } else {
-                res += ks + ' ' + ks + ' ' + ks + ' ' + ks + ' ';
-            }
-        }
-        
         cout << res << '\n';
-        cout << h << ' ' << tc << ' ' << ps << endl;
     }
 
     return 0;
