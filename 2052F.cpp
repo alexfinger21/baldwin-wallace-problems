@@ -3,6 +3,8 @@
 using ll=long long;
 using namespace std;
 
+// basically greedy with overcounting -- if only column is open, that's one panel, if both 2 columns and rows open, 2 solutions at least, if just row then add just row, pretty simple
+
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
