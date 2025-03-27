@@ -48,7 +48,7 @@ int main() {
                         prefix_sum.push_back((prefix_sum.back() + val) % MOD);
                     }
                     for (int j : current_x) {
-                        int delta = sqrt(d*d-1);
+                        int delta = d-1;
                         int low = j - delta;
                         int high = j + delta;
                         auto left = lower_bound(next_x.begin(), next_x.end(), low);
