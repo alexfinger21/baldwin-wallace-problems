@@ -3,6 +3,8 @@
 using ll=long long;
 using namespace std;
 
+ll inf = 1e15;
+
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
@@ -31,29 +33,64 @@ int32_t main() {
             cin >> b[i];
         }
             
-        vector<vector<ll>> dp(n, vector<ll>(2));
+        vector<vector<ll>> dp(n, vector<ll>(2, inf));
 
         ll res = 0;
 
         dp[0][0] = 0;
         dp[0][1] = a[0];
-        
-        ll prev = 0;
 
         for (int i = 1; i<n; ++i) {
-        
-        }
-        if (res != -1) {
-            if (dp[n-1][0] == -1) {
-                res += dp[n-1][1];
-            } else if (dp[n-1][1] == -1) {
-                res += dp[n-1][0];
-            } else {
-                res += min(dp[n-1][0], dp[n-1][1]);
+            for (int j = 0; j<2; ++j) {
+                for (int k = 0; k<2; ++k) {
+                    bool found = false;
+                    for (int f = 0; f<n; ++f) {
+                        if (h[i-1][f] + k == h[i][f] + j) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        dp[i][j] = min(dp[i-1][k] + a[i] * j, dp[i][j]);
+                    }
+                }
             }
         }
 
-        cout << res << '\n';
+        res += min(dp[n-1][0], dp[n-1][1]);
+
+        dp = vector<vector<ll>>(n, vector<ll>(2, inf));
+
+        dp[0][0] = 0;
+        dp[0][1] = b[0];
+
+        for (int i = 1; i<n; ++i) {
+            for (int j = 0; j<2; ++j) {
+                for (int k = 0; k<2; ++k) {
+                    bool found = false;
+                    for (int f = 0; f<n; ++f) {
+                        if (h[f][i-1] + k == h[f][i] + j) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        dp[i][j] = min(dp[i-1][k] + b[i] * j, dp[i][j]);
+                    }
+                }
+            }
+        }
+
+        res += min(dp[n-1][0], dp[n-1][1]);
+
+        if (res >= inf) {
+            cout << "-1\n";
+        } else {
+            cout << res << '\n';
+        }
+
     }
 
     return 0;
