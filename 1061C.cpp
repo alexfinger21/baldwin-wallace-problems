@@ -38,8 +38,7 @@ int32_t main() {
                 //cout << "val: " << a[i] << " divisor: " << j << " prev combs:" << totl[j-1] << " current combs:" << totl[j] << endl;
                 res = (res + totl[j-1]) % mod;
             }
-       } 
-       //cout << res << endl;
+       }
     }
 
 
