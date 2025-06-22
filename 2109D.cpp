@@ -56,6 +56,10 @@ int32_t main() {
             paths[x-1][1] = 1; 
         }
 
+        // so basically there are 2 states: even or odd (represented by a remainder), each new node reverses the remainder
+        // the confusing part is the bfs imo, it finds a min for each remainder, but it is a little confusing how it does it
+        // every node will be reached in the graph, and since the state reverses on every next node, if there is a path of with an odd difference in length,
+        // it will result in a different remainder and hence we can minimize it
         while (!q.empty()) {
             auto [vert, rem] = q.front();
             q.pop();
