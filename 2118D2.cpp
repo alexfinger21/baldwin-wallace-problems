@@ -10,86 +10,94 @@ int32_t main() {
     cin >> t;
 
     while (t--) {
-        int n, k;
-        cin >> n >> k;
+        ll m, k;
+        cin >> m >> k;
 
-        vector<ll> p(n);
-        vector<ll> d(n);
+        vector<ll> p(m+1), d(m+1);
 
-        ll min_p = 1e15 + 1, max_p = 0;
-
-        for (int i = 0; i<n; ++i) {
+        for (int i = 1; i<= m; ++i) {
             cin >> p[i];
-
-            min_p = min(min_p, p[i]);
-            max_p = max(max_p, p[i]);
         }
 
-        for (int i = 0; i<n; ++i) {
+        for (int i = 1; i<= m; ++i) {
             cin >> d[i];
         }
 
+        map<ll, vector<ll>> mpl, mpr;
+        map<ll, ll> traffic;
+
+        for (int i = 1; i<= m; ++i) {
+           traffic[p[i]] = d[i];
+           mpl[(d[i] + p[i]) % k].push_back(p[i]);
+           mpr[(((d[i] - p[i]) % k) + k) % k].push_back(p[i]);
+        }
+
+        auto get_next_left = [&](ll pos, ll t) {
+            ll val = (t + pos) % k;
+            auto &vec = mpl[val];
+            auto it = lower_bound(vec.begin(), vec.end(), pos);
+            if (it == vec.begin()) return -1ll;
+            --it;
+            return *it;
+        };
+
+        auto get_next_right = [&](ll pos, ll t) {
+            ll val = ((((t - pos) % k) + k) % k);
+            auto &vec = mpr[val];
+            auto it = lower_bound(vec.begin(), vec.end(), pos+1);
+            if (it == vec.end()) return -1ll;
+            return *it;
+        };
+
+
+        map<pair<ll, ll>, bool> dp;
 
         int q;
         cin >> q;
 
         for (int i = 0; i<q; ++i) {
-            ll pos;
-            cin >> pos;
+            ll x;
+            cin >> x;
 
-            int res = 0;
+            ll dir = 1, t = 0;
 
-            int idx = lower_bound(p.begin(), p.end(), pos) - p.begin();
-            if (idx == p.size()) {
-                cout << "YES\n";
-                continue;
+            set<pair<ll, ll>> states;
+
+            bool ok = false;
+
+            if (traffic.count(x) && traffic[x] == 0) {
+                dir = !dir;
             }
-            int dir = 1;
-            ll t = p[idx] - pos;
-            pos = p[idx];
 
-            vector<array<int, 2>> triggers(n, {0, 0});
-
-            while (res == 0) {
-                //cout << pos << ' ';
-                if ((t - d[idx]) >= 0 && !((t-d[idx]) % k)) {
-                    dir = !dir;
-                    if (triggers[idx][dir]) {
-                        res = -1;
-                        break;
-                    } else {
-                        triggers[idx][dir] = 1;
-                    }
-                }
-                
-                if (dir) {
-                    if (idx < n-1) {
-                        ++idx;
-                        t += p[idx] - pos;
-                        pos = p[idx];
-                    } else {
-                        res = 1;
-                        break;
-                    }
+            for (int j = 0; j<2*m; ++j) {
+                ll y = dir ? get_next_right(x, t) : get_next_left(x, t);
+                if (y == -1) {
+                    ok = true;
+                    break;
                 } else {
-                    if (idx > 0) {
-                        --idx;
-                        t += pos - p[idx];
-                        pos = p[idx];
-                    } else {
-                        res = 1;
-                        break;
-                    }
+                    t += abs(x-y);
+                    x = y;
+                    dir = !dir;
+                }
+
+                if (states.count({x, dir})) {
+                    break;
+                }
+
+                states.insert({x, dir});
+
+                if (dp.count({x, dir})) {
+                    ok = dp[{x, dir}];
+                    break;
                 }
             }
 
-            if (res > 0) {
-                cout << "YES\n"; 
-            } else {
-                cout << "NO\n"; 
+            for (auto s : states) {
+                dp[{s.first, s.second}] = ok;
             }
-        }
 
+            cout << (ok ? "YES\n" : "NO\n");
+        }
     }
 
     return 0;
