@@ -3,65 +3,47 @@
 using ll=long long;
 using namespace std;
 
+ll mod = 1e9 + 7;
+
 int32_t main() {
     ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    ll mod = 1e9+7;
 
     int n;
     cin >> n;
-
-    vector<ll> dp(n, 1);
-
     string s;
     cin >> s;
-
-    vector<ll> lims(26);
+    vector<int> a(26);
 
     for (int i = 0; i<26; ++i) {
-        cin >> lims[i];
+        cin >> a[i];
     }
 
-    int maxL = 1;
-    int mS = 1;
-    int lastMax = 0;
+    vector<ll> dp(n);
 
-    for (int i = 1; i<n; ++i) {
-        ll mn = min(lims[s[i] - 'a'], lims[s[i-1] - 'a']);
-        dp[i] = dp[i-1];
+    int longest = 0;
+    int l_idx = 0;
+    int num = 1;
 
-        int j;
+    for (int i = 0; i<n; ++i) {
+        int rem = 1e3+1;
+        for (int j = i; j>=0; --j) {
+            rem = min(a[s[j] - 'a'] - (i - j), rem);
 
-        for (j = i-1; j>=0 && (i-j+1) <= mn; --j) {
-            maxL = max(maxL, i-j+1);
-            if (j == 0) {
-                //cout << "zero" << endl;
-                ++dp[i];
-                continue;
+            if (rem > 0) {
+                dp[i] = (dp[i] + (j ? dp[j-1] : 1)) % mod;
+                --rem;
+                longest = max(longest, i - j + 1);
+            } else {
+                if (j+1 > l_idx) {
+                    l_idx = i;
+                    ++num;
+                }
+                break;
             }
-            /*
-            if (s[i] == 'd') {
-                cout << j << ' ' << dp[j-1] << endl;
-            }
-            */
-            dp[i] = (dp[i] + dp[j-1]) % mod;
-            mn = min(mn, lims[s[j-1]-'a']);
         }
-
-        ++j;
-
-        if (j > lastMax) {
-            lastMax = i;
-            ++mS;
-        }
-        
-        //cout << dp[i] << endl;
     }
-
-    cout << dp[n-1] << '\n';
-    cout << maxL << '\n';
-    cout << mS << '\n';
+    
+    cout << dp[n-1] << '\n' << longest << '\n' << num << '\n';
 
     return 0;
 }
