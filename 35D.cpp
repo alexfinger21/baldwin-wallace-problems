@@ -16,24 +16,22 @@ int32_t main() {
     vector<int> c(n);
 
     for (int i = 0; i<n; ++i) {
-        int b;
-        cin >> b;
-
-        c[i] = b * (n - i);
+        cin >> c[i];
     }
 
-    sort(c.begin(), c.end());
+    vector<vector<int>> dp(x+1, vector<int>(n));
 
-    int s = 0;
-    int res = 0;
-    for (int i = 0; i<n; ++i) {
-        s += c[i];
-        if (s <= x) {
-            ++res;
+    for (int i = 1; i<=x; ++i) {
+        for (int j = 0; j<n; ++j) {
+            if (!j) {
+                dp[i][j] = max(dp[i-1][j], (c[j] * (n-j)) <= i ? 1 : 0);
+            } else {
+                dp[i][j] = max(dp[i][j-1], (c[j] * (n-j)) <= i ? dp[i-c[j]*(n-j)][j-1]+1 : dp[i-1][j]);
+            }
         }
     }
 
-    cout << res << endl;
+    cout << dp[x][n-1] << '\n';
 
     return 0;
 }
