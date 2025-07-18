@@ -1,32 +1,35 @@
-#include <bits/stdc++.h>
-
-using ll=long long;
-using namespace std;
-
-int32_t main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    int t;
-    cin >> t;
-
-    while (t--) {
-        int n;
-        cin >> n;
-
-        string s;
-        cin >> s;
-
-        set<char> d;
-        int res = 0;
-
-        for (int i = 0; i<n; ++i) {
-            d.insert(s[i]);
-
-            res += d.size();
+#include <set>
+#include <string>
+#include <iostream>
+int main()
+{
+    using namespace std;
+    int cases;
+    cin >> cases;
+    
+    for (int c = 0; c<cases; ++c) {
+        int len;
+        cin >> len;
+        
+        len = 1;
+        
+        string str;
+        cin >> str;
+        
+        set<char> prevChar = {str[0]};
+        
+        int uniqueLen = 1;
+        
+        for (int i = 1; i<str.length(); ++i) {
+            if (prevChar.find(str[i]) == prevChar.end()) {
+                ++uniqueLen;
+                prevChar.insert(str[i]);
+            }
+            
+            len += uniqueLen;
         }
-
-        cout << res << '\n';
+        cout << len << endl;
     }
-
+ 
     return 0;
 }

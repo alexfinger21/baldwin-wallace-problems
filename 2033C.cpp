@@ -3,6 +3,8 @@
 using ll=long long;
 using namespace std;
 
+//so basically start from the inside, and if the outsides of the two array values you're swapping is the same as the value, you can only reduce distractions using that swap (abcc --> acbc), etc,
+//since the swaps will always be beneficial, repeat from inside because everything builds off the inner elements
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);

@@ -13,28 +13,35 @@ int32_t main() {
         ll n, k;
         cin >> n >> k;
 
-        ll l = 0, h = n+k-1;
-
-        ll minn = -1;
+        ll l = k, h = k+n-1;
 
         while (l < h) {
-            ll mid = (l + h)/2;
-            ll num = (1+mid)/2*(mid) - (n+k-1-mid+mid)*(n-mid);
+            ll mid = (l+h) >> 1;
 
-            if (minn == -1) {
-                minn = abs(num);
-            } else {
-                minn = min(minn, abs(num));
-            }
+            ll pos = (k+mid-1)*(mid-k)/2;
+            ll neg = (k+n-1+mid)*(k+n-mid)/2;
+            ll lv = abs(pos-neg);
+            //cout << pos << ' ' << neg << ' ' << lv << endl;
+            
+            pos = (k+mid)*(mid-k+1)/2;
+            neg = (k+n+mid)*(k+n-mid-1)/2;
+            ll mv = abs(pos-neg);
+            //cout << pos << ' ' << neg << ' ' << mv << endl;
 
-            if (mid >= 0) {
+            pos = (k+mid+1)*(mid-k+2)/2;
+            neg = (k+n+mid+1)*(k+n-mid-2)/2;
+            ll hv = abs(pos-neg);
+            //cout << pos << ' ' << neg << ' ' << hv << endl;
+
+            if (mv <= lv && mv <= hv) {
+                cout << mv << '\n';
+                break;
+            } else if (lv <= mv && lv <= hv) {
                 h = mid;
             } else {
-                l = mid+1;
+                l = mid;
             }
         }
-
-        cout << minn << '\n';
     }
 
     return 0;
