@@ -31,8 +31,6 @@ int32_t main() {
             }
         }
 
-        //cout << uniqC << endl;
-
         if (uniqC > 1) {
             int cs = 1;
             for (int i = 0; i<n; ++i) {
