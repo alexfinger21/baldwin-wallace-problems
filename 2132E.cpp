@@ -54,18 +54,6 @@ int32_t main() {
             }
         }
 
-        /*
-        for (auto x : pa) {
-            cout << x << ' ';
-        }
-        cout << endl;
-
-        for (auto x : pb) {
-            cout << x << ' ';
-        }
-        cout << endl;
-        */
-    
         for (int i = 0; i<q; ++i) {
             int x, y, z;
             cin >> x >> y >> z;
