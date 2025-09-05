@@ -31,17 +31,11 @@ int32_t main() {
         sort(a.begin(), a.end(), greater<ll>());
         sort(b.begin(), b.end(), greater<ll>());
 
-        vector<int> bgra(n, m+1);
+        vector<pair<ll, int>> best_combs(n+m);
         
         for (int i = 0; i<n; ++i) {
             pa[i] = a[i];
-            auto idx = upper_bound(b.rbegin(), b.rend(), a[i]);
 
-            if (idx == b.rend()) {
-                bgra[i] = 0;
-            } else {
-                bgra[i] = (idx).base() - b.begin();
-            }
             if (i) {
                 pa[i] = pa[i] + pa[i-1];
             }
@@ -54,54 +48,73 @@ int32_t main() {
             }
         }
 
+        int i = 0;
+        int j = 0;
+
+        while ((i + j) < n+m) {
+            //cout << b[j] << ' ' << a[i] << endl;
+            if (m <= j || (i < n && a[i] > b[j])) {
+                //cout << "a " << i << ' ' << j << endl;
+                best_combs[i+j] = {a[i], i+1};
+                ++i;
+            } else {
+                //cout << "b " << i << ' ' << j << endl;
+                best_combs[i+j] = {b[j], i};
+                ++j;
+            }
+        }
+
+
         for (int i = 0; i<q; ++i) {
             int x, y, z;
             cin >> x >> y >> z;
 
-            if (z && x) {
-                int x_bnd = min(x, z);
-                ll res = 0;
-                if (min(y,z) > 0) res = pb[min(y,z)-1];
-
-                if (x >= z) {
-                    res = max(res, pa[z-1]);
-                } else {
-                    res = max(res, pa[x-1] + (min(z-x_bnd-1, y-1) >= 0 ? pb[min(z-x_bnd-1, y-1)] : 0));
-                }
-
-                int l = 0, r = min(x, z)-2;
-
-                while (l < r) {
-                    int m = (l + r) >> 1;
-
-                    int bgr = bgra[m];
-                    int bgr2 = bgra[m+1];
-                    //cout << m << ' ' << bgr << ' ' << bgr2 << endl;
-                    //cout << l << ' ' << r << endl;
-
-                    if (1 + m + bgr > z) {
-                        r = m-1;
-                    } else if ((1 + m + bgr < z && 1 + m + bgr2 <= z)) {
-                        l = m+1;
-                    } else {
-                        if ((m + 1 + max(0, min(y, z - m - 1))) < z) {
-                            l = m+1;
-                            continue;
-                        }
-                        //cout << "HERE" << endl;
-                        res = max(res, pa[m] + (min(y-1, z - m - 2) >= 0 ? pb[min(y-1, z - m - 2)] : 0));
-                        break;
-                    }
-                }
-
-                res = max(res, pa[l] + (min(y-1, z - l - 2) >= 0 ? pb[min(y-1, z - l - 2)] : 0));
-
-                cout << res << "\n";
-            } else if (!z) {
+            if (!z) {
                 cout << "0\n";
-            } else {
-                cout << pb[min(y, z) - 1] << '\n';
+                continue;
             }
+
+            if (!x) {
+                cout << pb[z-1] << '\n';
+                continue;
+            } 
+
+            if (!y) {
+                cout << pa[z-1] << '\n';
+                continue;
+            } 
+            int l = 0, r = z-1;
+            ll res = 0;
+
+            while (l < r) {
+                int m = (l+r) >> 1;
+                int y_c = m - best_combs[m].second+1; 
+
+                if (best_combs[m].second > x || (y_c > y)) {
+                    r = m-1; 
+                } else if (best_combs[m].second < x && y_c < y) {
+                    l = m+1;
+                } else {
+                    l = m;
+                    break;
+                }
+            }
+
+            //cout << l << ' ' << best_combs[l].second << endl;
+
+            if (best_combs[l].second == min(x, z)) {
+                res = pa[best_combs[l].second-1];
+                if (z - best_combs[l].second > 0) {
+                    res += pb[z - best_combs[l].second - 1];
+                }
+            } else {
+                res = pb[l - best_combs[l].second];
+                if (z - (l - best_combs[l].second + 1) > 0) {
+                    res += pa[z - (l - best_combs[l].second + 1) - 1];
+                }
+            }
+
+            cout << res << '\n';
         }
     }
 
