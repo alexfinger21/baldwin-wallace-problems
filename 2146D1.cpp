@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
 #include <cmath>
 
+// ngl the only thing i get is that the res is n*(n+1) because the sum of l..r is (l+r)*(r-l+1)/2, and then since bits never overlap the res is *2
+// because a + r = a | r + a & r;
+
 using ll=long long;
 using namespace std;
 
