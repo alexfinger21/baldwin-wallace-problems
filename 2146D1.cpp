@@ -15,11 +15,37 @@ int32_t main() {
 
         cin >> l >> r;
 
-        int n = r - l + 1;
+        ll res = 0;
 
-        vector<int> a(n), b(n);
+        vector<int> s(r-l+1);
 
-        iota
+        int cnt = 0;
+        int diff = r-pow(2,(int)(log2(r)));
+
+        for (int i = 0; i<diff; ++i) {
+            s[i] = diff-i;
+            res += s[i] | i;
+        }
+
+        for (int i = diff; i<=r-diff*2; ++i) {
+            int n = r-i;
+            s[i] = n;
+
+            res += n | i;
+        }
+
+        for (int i = r-diff*2+1; i<=r; ++i) {
+            int n = r - (i - (r-diff*2+1));
+            s[i] = n;
+
+            res += n | i;
+        }
+
+        cout << res << '\n';
+        for (auto x : s) {
+            cout << x << ' ';
+        }
+        cout << '\n';
     }
 
     return 0;
