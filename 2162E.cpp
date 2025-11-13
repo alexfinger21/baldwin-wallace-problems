@@ -35,13 +35,18 @@ int32_t main() {
 
             if (uniq.size() == 1) {
                 cout << uniq[0] << ' ';
-                int ltr = 0;
+                int num = 1;
                 for (int i = 0; i<k-1; ++i) {
-                    if (ltr > 0 && a[ltr] == a[ltr-1]) {
-                        ++ltr;
+                    if ((i == 0 && a[n-1] == num) || (uniq[0] == num)) {
+                        ++num;
                     }
-                    cout << a[ltr] << ' ';
-                    ++ltr;
+
+                    if (num > n) {
+                        num = 1;
+                    }
+
+                    cout << num << ' ';
+                    ++num;
                 }
                 cout << '\n';
             } else {
