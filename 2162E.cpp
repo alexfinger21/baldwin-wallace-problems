@@ -37,25 +37,31 @@ int32_t main() {
                 cout << uniq[0] << ' ';
                 int num = 1;
                 for (int i = 0; i<k-1; ++i) {
-                    if ((i == 0 && a[n-1] == num) || (uniq[0] == num)) {
-                        ++num;
-                    }
-
                     if (num > n) {
                         num = 1;
                     }
+
+                    while ((i == 0 && a[n-1] == num) || (uniq[0] == num)) {
+                        ++num;
+                        if (num > n) {
+                            num = 1;
+                        }
+                    }
+
 
                     cout << num << ' ';
                     ++num;
                 }
                 cout << '\n';
             } else {
+                map<int, int> bad;
                 for (int i = 0; i<k && i<uniq.size(); ++i) {
                     cout << uniq[i] << ' ';
+                    bad[uniq[i]] = 1;
                 }
 
-                for (int i = 0; i<k-uniq.size(); ++i) {
-                    if (find(uniq.begin(), uniq.end(), i+1) != uniq.end()) {
+                for (int i = 0; i<(k-(int)(uniq.size())); ++i) {
+                    if (bad[i+1]) {
                         ++k;
                     } else {
                         cout << i+1 << ' ';
