@@ -31,11 +31,9 @@ int32_t main() {
             if (!(a[i] % j)) {
                 if (a[i]/j <= n && a[i]/j != j) {
                     totl[a[i]/j] = (totl[a[i]/j] + (totl[a[i]/j-1])) % mod;
-                    //cout << "val: " << a[i] << " divisor: " << a[i]/j << " current combs:" << totl[a[i]/j] << endl;
                     res = (res + totl[a[i]/j-1]) % mod;
                 }
                 totl[j] = (totl[j] + (totl[j-1])) % mod;
-                //cout << "val: " << a[i] << " divisor: " << j << " prev combs:" << totl[j-1] << " current combs:" << totl[j] << endl;
                 res = (res + totl[j-1]) % mod;
             }
        }
