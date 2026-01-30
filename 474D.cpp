@@ -16,6 +16,10 @@ int32_t main() {
 
         dp[0][0] = 1;
         dp[0][1] = 1;
+
+        for (int i = 0; i<r; ++i) {
+
+        }
     }
 
     return 0;
