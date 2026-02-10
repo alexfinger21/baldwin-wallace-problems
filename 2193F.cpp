@@ -16,7 +16,7 @@ int32_t main() {
         cin >> n >> ax >> ay >> bx >> by;
 
         map<ll, set<ll>> paths;
-        vector<ll> x_arr(n+1);
+        vector<ll> x_arr(n);
 
         map<ll, ll> gaps_min;
         map<ll, ll> gaps_max;
@@ -28,120 +28,48 @@ int32_t main() {
             x_arr[i] = x;
         }
 
-        x_arr[n] = bx;
-
         for (int i = 0; i<n; ++i) {
             ll y;
             cin >> y;
 
-            paths[x_arr[i]].insert(y);
-
             if (!gaps_min.count(x_arr[i])) {
-                gaps_min[x_arr[i]] = 1e9+1;
+                gaps_min[x_arr[i]] = 1e9 + 1;
             }
 
             gaps_min[x_arr[i]] = min(gaps_min[x_arr[i]], y);
             gaps_max[x_arr[i]] = max(gaps_max[x_arr[i]], y);
         }
 
-        paths[bx].insert(by);
+        gaps_min[bx] = by;
+        gaps_max[bx] = by;
 
-        if (!gaps_min.count(bx)) {
-            gaps_min[bx] = 1e9+1;
-        }
+        gaps_min[ax] = ay;
+        gaps_max[ax] = ay;
 
-        gaps_min[bx] = min(gaps_min[bx], by);
-        gaps_max[bx] = max(gaps_max[bx], by);
+        const int s = gaps_max.size();
+        vector<vector<ll>> dp(s, vector<ll>(2));
 
-        paths[ax].insert(ay);
-
-        ll best_y = ay;
-        ll dp_res = 0;
-        ll cnt = -1;
-        ll last_x = ax;
-
-        if (gaps_min.count(ax)) {
-            ll y_min = ay;
-            ll y_max = ay;
-
-            for (auto y : paths[ax]) {
-                y_min = min(y_min, y);
-                y_max = max(y_max, y);
-            } 
-
-
-            for (auto y : paths[ax]) {
-                if (y > ay) {
-                    ll res = (ay-y_min) * 2 + (y_max - y) * 2 + y - ay;
-                    if (cnt == -1 || res < cnt) {
-                        cnt = res;
-                        best_y = y;
-                    }
-                } else {
-                    ll res = (y - y_min) * 2 + (y_max - ay) * 2 + ay - y;
-                    if (cnt == -1 || res < cnt) {
-                        cnt = res;
-                        best_y = y;
-                    }
-                } 
+        int i = 0;
+        ll prev_x = 0;
+        for (auto x : gaps_max) {
+            if (i == 0) {
+                dp[i][0] = 0;
+                dp[i][1] = 0;
+            } else {
+                ll low = gaps_min[x.first];
+                ll gap_y = x.second - low;
+                //cout << "GAP: " << gap_y << endl;
+                dp[i][0] = min(dp[i-1][0] + abs(x.second - gaps_min[prev_x]), dp[i-1][1] + abs(x.second - gaps_max[prev_x])) + gap_y + x.first - prev_x; 
+                dp[i][1] = min(dp[i-1][0] + abs(low - gaps_min[prev_x]), dp[i-1][1] + abs(low - gaps_max[prev_x])) + gap_y + x.first - prev_x; 
+                //cout << min(dp[i][0], dp[i][1]) << endl;
             }
 
+            prev_x = x.first;
+            ++i;
         }
 
-        if (cnt > 0) {
-            cout << cnt << endl;
-            dp_res += cnt;
-        }
+        cout << min(dp[s-1][0], dp[s-1][1]) << endl;
 
-        for (auto x : paths) {
-            if (last_x == x.first) {
-                continue;
-            } 
-            dp_res += x.first - last_x;
-
-            ll cnt = -1;
-            ll y_min = gaps_min[x.first];
-            ll y_max = gaps_max[x.first];
-            ll y_c = y_min;
-            if (y_min > best_y) {
-                dp_res += y_min - best_y;
-                best_y = y_min;
-            } else if (y_max < best_y) {
-                dp_res += best_y - y_max;
-                best_y = y_max;
-            }
-            cout << "best y: " << best_y << endl;
-            cout << "y_min " << y_min << endl;
-            cout << "y_max " << y_max << endl;
-
-            for (auto y : x.second) {
-                if (y > best_y) {
-                    ll res = (best_y-y_min) * 2 + (y_max - y) * 2 + y - best_y;
-                    if (cnt == -1 || res < cnt) {
-                        cout << "result from max: " << res << endl;
-                        cnt = res;
-                        y_c = y;
-                    }
-                } else {
-                    ll res = (y - y_min) * 2 + (y_max - best_y) * 2 + best_y - y;
-                    if (cnt == -1 || res < cnt) {
-                        cnt = res;
-                        y_c = y;
-                    }
-                } 
-            }
-            cout << cnt << endl;
-            cout << x.first - last_x << endl;
-
-            cout << dp_res << endl;
-            cout << "------------" << endl;
-            last_x = x.first;
-            dp_res += cnt;
-            best_y = y_c;
-            cout << dp_res << endl;
-        }
-
-        cout << dp_res << endl;
     }
 
     return 0;
