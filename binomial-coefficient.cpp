@@ -17,16 +17,16 @@ int32_t main() {
     vector<ll> dp(k+1);
 
     for (ll i = 0; i<=n; ++i) {
-        for (ll j = min(i, k); j>=0; --j) {
-            if (j == 0 || j == i) {
+        for (ll j = k-min(i, k); j<=k; ++j) {
+            if ((j == k-min(i, k) && i <= k) || j == k) {
                 dp[j] = 1;
             } else {
-                dp[j] += dp[j-1]; 
+                dp[j] += dp[j+1]; 
             }
         }
     }
 
-    cout << dp[k] << '\n';
+    cout << dp[0] << '\n';
 
     return 0;
 }
