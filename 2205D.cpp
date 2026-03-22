@@ -26,61 +26,98 @@ int32_t main() {
         vector<int> a_sorted(a);
         sort(a_sorted.begin(), a_sorted.end());
 
-        priority_queue<int> peaks;
+        vector<int> peaks;
+        map<int, int> peak_idx;
+        map<int, int> sorted_peak_idx;
         vector<int> smaller_left(n);
         vector<int> smaller_right(n);
 
         for (int i = 0; i<n; ++i) {
             if (i > 0 && i < n-1 && a[i-1] < a[i] && a[i+1] < a[i]) {
-                peaks.push(a[i]);
+                peaks.push_back(a[i]);
+                peak_idx[a[i]] = i;
             }
         }
 
-        int res = 0;
 
-        while (!peaks.empty()) {
-            int t = peaks.top();
+        sort(peaks.begin(), peaks.end());
+
+        for (int i = 0; i<peaks.size(); ++i) {
+            sorted_peak_idx[peaks[i]] = i;
+        }
+
+
+        vector<int> min_peak(peaks.size());
+
+        for (int i = 0; i<peaks.size(); ++i) {
+            int t = peaks[i];
             int l_count = 0;
             int r_count = 0;
+            int l = 0;
+            int r = 0;
 
             if (indices[t] != -1) {
-                // cout << "peak: " << t << endl;
-                for (int i = 0; i<n; ++i) {
-                    if (a_sorted[i] == t) {
+                // // cout << "peak: " << t << endl;
+                int j = indices[t] - 1;
+                int prev_peak = -1;
+
+                while (j >= 0) {
+                    if (a[j] > t) {
                         break;
                     }
-                    
-                    if (indices[a_sorted[i]] != -1) {
-                        // cout << "found!" << endl;
-                        if (indices[a_sorted[i]] < indices[t]) {
-                            smaller_left[l_count] = a_sorted[i];
-                            ++l_count;
-                        } else {
-                            smaller_right[r_count] = a_sorted[i];
-                            ++r_count;
+
+                    if (peak_idx.count(a[j]) && sorted_peak_idx[a[j]] >= prev_peak) {
+                        if (prev_peak != -1) {
+                            r -= min_peak[sorted_peak_idx[prev_peak]];
                         }
-                    }
+                        prev_peak = sorted_peak_idx[a[j]];
+                        r += min_peak[sorted_peak_idx[a[j]]];
+                        // cout << "MIN PEAK L: " <<min_peak[sorted_peak_idx[a[j]]] << ' ' << a[j] << endl; 
+                    } 
+
+
+                    ++l_count;
+                    ++l;
+
+                    --j;
                 }
 
-                // cout << l_count << ' ' << r_count << endl;
 
-                if (l_count < r_count) {
-                    for (int i = 0; i<l_count; ++i) {
-                        indices[smaller_left[i]] = -1;
+                j = indices[t] + 1;
+                prev_peak = -1;
+
+                while (j < n) {
+                    if (a[j] > t) {
+                        break;
                     }
-                } else {
-                    for (int i = 0; i<r_count; ++i) {
-                        indices[smaller_right[i]] = -1;
-                    }
+
+                    if (peak_idx.count(a[j]) && sorted_peak_idx[a[j]] >= prev_peak) {
+                        if (prev_peak != -1) {
+                            r -= min_peak[sorted_peak_idx[prev_peak]];
+                        }
+                        prev_peak = sorted_peak_idx[a[j]];
+                        l += min_peak[sorted_peak_idx[a[j]]];
+                        // cout << "MIN PEAK R: " <<min_peak[sorted_peak_idx[a[j]]] << endl; 
+                    } 
+
+                    ++r;
+                    ++r_count;
+
+                    ++j;
                 }
 
-                res += min(r_count, l_count);
+                // // cout << l_count << ' ' << r_count << endl;
+
+                for (int j = peak_idx[peaks[i]] - l_count; j<=peak_idx[peaks[i]] + r_count; ++j) {
+                    indices[a[j]] = -1;
+                }
+
+                min_peak[i] = min(l, r);
+                // cout << t << ' ' << min_peak[i] << endl;
             }
-
-            peaks.pop();
         }
 
-        cout << res << '\n';
+        cout << (peaks.size() ? (min_peak[peaks.size()-1]) : 0) << '\n';
     }
 
     return 0;
