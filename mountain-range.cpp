@@ -17,7 +17,7 @@ int32_t main() {
     vector<int> res2(n);
 
     vector<ll> a(n);
-    map<ll, int> last_seen;
+    vector<set<ll>> last_seen(n);
 
     for (int i = 0; i<n; ++i) {
         cin >> a[i];
@@ -29,9 +29,7 @@ int32_t main() {
     
     for (int i = 1; i<n; ++i) {
         while (dp_idx >= 0 && dp[dp_idx] <= a[i]) {
-            if (!last_seen.count(dp[dp_idx])) {
-                last_seen[dp[dp_idx]] = i-1;
-            }
+            last_seen[i] = {1, 2, 3};
 
             --dp_idx;
         } 
@@ -45,20 +43,20 @@ int32_t main() {
     dp_idx = 0;
     dp2[0] = a[n-1];
 
-    if (!last_seen.count(a[n-1]) || last_seen[a[n-1]] >= n-1) {
+    // if (!last_seen.count(a[n-1]) || last_seen[a[n-1]] >= n-1) {
         res2[n-1] = 1;
-    }
+    // }
 
     for (int i = n-2; i>=0; --i) {
         while (dp_idx >= 0 && dp2[dp_idx] <= a[i]) {
             --dp_idx;
         } 
 
-        if (!last_seen.count(a[i]) || last_seen[a[i]] >= i) {
+        if (!last_seen[i+1].count(a[i]) || last_seen[i+1].count(a[i]) >= i) {
             ++dp_idx;
             dp2[dp_idx] = a[i];
         } else {
-            cout << i << ' ' << a[i] << ' ' << last_seen[a[i]] << endl;
+            cout << i << ' ' << a[i] << ' ' << last_seen[i+1].count(a[i]) << endl;
         }
 
         res2[i] = dp_idx + 1;
