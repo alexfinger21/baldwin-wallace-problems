@@ -3,9 +3,7 @@
 using ll=long long;
 using namespace std;
 
-ll buildTree(vector<ll>& tree, vector<ll>& arr, vector<pair<int, int>>& ranges, int s, int e, int idx) {
-    ranges[idx] = {s, e};
-
+ll buildTree(vector<ll>& tree, vector<ll>& arr, int s, int e, int idx) {
     if (s >= e) {
         tree[idx] = arr[s];
         return arr[s];
@@ -16,7 +14,6 @@ ll buildTree(vector<ll>& tree, vector<ll>& arr, vector<pair<int, int>>& ranges, 
     tree[idx] = buildTree(
             tree,
             arr,
-            ranges,
             s,
             mid,
             idx*2 + 1
@@ -24,15 +21,15 @@ ll buildTree(vector<ll>& tree, vector<ll>& arr, vector<pair<int, int>>& ranges, 
         buildTree(
             tree,
             arr,
-            ranges,
-            mid,
-            e, idx*2 + 2
+            mid + 1,
+            e, 
+            idx*2 + 2
         );
 
     return tree[idx];
 }
 
-ll getRange(vector<ll>& tree, vector<ll>& arr, vector<pair<int, int>>& ranges, int s, int e, int idx) {
+ll getRange(vector<ll>& tree, vector<ll>& arr, int rs, int re, int s, int e, int idx) {
     ll sm = 0;
     
     /*
@@ -42,27 +39,32 @@ ll getRange(vector<ll>& tree, vector<ll>& arr, vector<pair<int, int>>& ranges, i
     */
 
 
-    if (s == ranges[idx].first && e == ranges[idx].second) {
+    if (s == rs && e == re) {
         return tree[idx];
     }
 
-    if (s <= (ranges[idx].first + ranges[idx].second)/2) {
+    int mid = (rs + re)/2;
+
+    if (s <= mid) {
         sm += getRange(
             tree,
             arr,
-            ranges,
+            rs,
+            mid,
             s,
-            min(e, (ranges[idx].first + ranges[idx].second)/2),
+            min(e, (rs + re)/2),
             idx*2 + 1
         );
     }
 
-    if (e > (ranges[idx].first + ranges[idx].second)/2) {
+    if (e > (rs + re)/2) {
         sm += getRange(tree,
             arr,
-            ranges,
-            max(s, (ranges[idx].first + ranges[idx].second)/2 + 1),
-            e, idx*2 + 2
+            mid+1,
+            re,
+            max(s, mid + 1),
+            e, 
+            idx*2 + 2
         );
     }
 
@@ -77,14 +79,13 @@ int32_t main() {
     cin >> n;
 
     vector<ll> tree(4*n);
-    vector<pair<int, int>> ranges(4*n);
     vector<ll> arr(n);
 
     for (int i = 0; i<n; ++i) {
         cin >> arr[i];
     }
 
-    buildTree(tree, arr, ranges, 0, n-1, 0);
+    buildTree(tree, arr, 0, n-1, 0);
 
     for (auto x: tree) {
         cout << x << ' ';
@@ -101,7 +102,7 @@ int32_t main() {
         int e;
         cin >> s >> e;
 
-        cout << getRange(tree, arr, ranges, s, e, 0) << endl;
+        cout << getRange(tree, arr, 0, n-1, s, e, 0) << endl;
     }
 
 
