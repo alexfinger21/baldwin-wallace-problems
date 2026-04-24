@@ -3,6 +3,9 @@
 using ll=long long;
 using namespace std;
 
+const int MAX_N = 200005;
+ll tree[MAX_N * 2];
+
 void update() {
 }
 
