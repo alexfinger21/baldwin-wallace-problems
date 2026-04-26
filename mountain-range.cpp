@@ -7,6 +7,9 @@ const int MAX_N = 200005;
 ll tree[MAX_N * 2];
 
 void update() {
+    for (int i = 0; i<n; ++i) {
+
+    }
 }
 
 int32_t main() {
