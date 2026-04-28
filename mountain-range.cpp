@@ -5,90 +5,101 @@ using namespace std;
 
 const int MAX_N = 200005;
 ll tree[MAX_N * 2];
+ll n;
 
-void update() {
-    for (int i = 0; i<n; ++i) {
+void update(int idx, int val) {
+    idx += n;
 
+    for (tree[idx] = val; idx>1; idx >>= 1) {
+        tree[idx >> 1] = max(tree[idx], tree[idx ^ 1]); 
     }
+}
+
+ll query(int l, int r) {
+    ll res = 0;
+
+    for (l += n, r += n; l<r; l >>= 1, r >>= 1) {
+        if (l & 1) res = max(res, tree[l++]);
+        if (r & 1) res = max(res, tree[--r]);
+    }
+
+    return res;
 }
 
 int32_t main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
 
-    int n;
     cin >> n;
 
-    vector<ll> dp(n);
-    vector<ll> dp2(n);
-
-    vector<int> res(n);
-    vector<int> res2(n);
-
-    vector<ll> a(n);
-    map<ll, int> last_seen;
+    vector<ll> h(n);
+    vector<ll> L(n, -1), R(n, n);
+    vector<ll> st;
 
     for (int i = 0; i<n; ++i) {
-        cin >> a[i];
+        cin >> h[i];
     }
 
-    dp[0] = a[0];
-    int dp_idx = 0;
-    res[0] = 1;
-    
-    for (int i = 1; i<n; ++i) {
-        while (dp_idx >= 0 && dp[dp_idx] <= a[i]) {
-            if (!last_seen.count(dp[dp_idx])) {
-                last_seen[dp[dp_idx]] = i-1;
-            }
-
-            --dp_idx;
-        } 
-
-        ++dp_idx;
-        dp[dp_idx] = a[i];
-
-        res[i] = dp_idx + 1;
-    }
-
-    dp_idx = 0;
-    dp2[0] = a[n-1];
-
-    if (!last_seen.count(a[n-1]) || last_seen[a[n-1]] >= n-1) {
-        res2[n-1] = 1;
-    }
-
-    for (int i = n-2; i>=0; --i) {
-        while (dp_idx >= 0 && dp2[dp_idx] <= a[i]) {
-            --dp_idx;
-        } 
-
-        if (!last_seen.count(a[i]) || last_seen[a[i]] >= i) {
-            ++dp_idx;
-            dp2[dp_idx] = a[i];
-        } else {
-            cout << i << ' ' << a[i] << ' ' << last_seen[a[i]] << endl;
+    for (int i = 0; i<n; ++i) {
+        while (!st.empty() && h[st.back()] < h[i]) {
+            st.pop_back();
         }
 
-        res2[i] = dp_idx + 1;
-    }
-
-    int out = 1;
-
-
-    for (int i = 0; i<n-1; ++i) {
-        out = max(out, res[i] + res2[i+1]);
-        if (res[i] + res2[i+1] == 9) {
-            cout << i << ' ' << a[i-1] << ' ' << a[i] << ' ' << a[i+1] << endl;
-            for (int i = -3; i<3; ++i) {
-                cout << a[i-1] << ' ';
-            }
-            cout << endl;
+        if (!st.empty()) {
+            L[i] = st.back();
         }
-        // cout << res[i] << ' ' << res2[i+1] << endl;
+
+        st.push_back(i);
     }
-    
-    cout << out << '\n';
+
+    st.clear();
+
+    for (int i = n-1; i>=0; --i) {
+        while (!st.empty() && h[st.back()] < h[i]) {
+            st.pop_back();
+        }
+
+        if (!st.empty()) {
+            R[i] = st.back();
+        }
+
+        st.push_back(i);
+    }
+
+    vector<pair<ll, int>> h_pairs(n);
+
+    for (int i = 0; i<n; ++i) {
+        h_pairs[i] = {h[i], i};
+    }
+
+    sort(h_pairs.begin(), h_pairs.end());
+
+    vector<ll> dp(n);
+
+    ll res = 1;
+
+    for (int i = 0; i<n;) {
+        int j = i;
+
+        while (j < n && h_pairs[j].first == h_pairs[i].first) {
+            int idx = h_pairs[j].second;
+            dp[idx] = 1 + query(L[idx] + 1, R[idx]);
+            // cout << "query res: " << dp[idx] << endl;
+
+            res = max(dp[idx], res);
+
+            ++j;
+        }
+
+        for (int k = i; k<j; ++k) {
+            update(h_pairs[k].second, dp[h_pairs[k].second]);
+        }
+
+        i = j;
+    }
+
+    cout << res << '\n';
 
     return 0;
 }
+
