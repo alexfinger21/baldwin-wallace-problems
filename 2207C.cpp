@@ -14,65 +14,74 @@ int32_t main() {
 
         cin >> n >> h;
 
-        vector<ll> drains(1);
-        vector<ll> min_h(1);
-        vector<ll> max_h(1);
+        vector<ll> dp_l(n);
+        vector<ll> dp_r(n);
+        
+        vector<pair<ll, ll>> rng;
+        ll sm = 0;
+
+        vector<ll> heights(n);
 
         for (int i = 0; i<n; ++i) {
-            ll new_h;
-            cin >> new_h;
+            cin >> heights[i];
 
-            ll added_h = h;
+            int new_i = i;
 
-            cout << i << "---" << endl;
+            while (!rng.empty() && rng.back().first < heights[i]) {
+                pair<ll, ll> last_h = rng.back();
+                rng.pop_back();
 
-            for (int j = 0; j<drains.size(); ++j) {
-                if (new_h >= max_h[j]) {
-                    drains[j] += added_h-new_h;
-                    
-                    if (!min_h[j] && new_h != max_h[j]) {
-                        min_h[j] = max_h[j];
-                    }
+                if (!rng.empty()) {
+                    sm -= (h - last_h.first) * (new_i - rng.back().second - 1);
+                    sm += (h - heights[i]) * (new_i - rng.back().second - 1);
 
-                    max_h[j] = new_h;
-                    added_h = new_h;
-
-                    // break;
+                    new_i = last_h.second;
                 } else {
-                    if (!min_h[j]) {
-                        max_h[j] = new_h;
-                    } else {
-                        drains[j] += max(0LL, added_h - max_h[j]);
-
-                        added_h = min(added_h, max_h[j]);
-                    }
+                    sm -= (h - last_h.first) * (new_i);
+                    sm += (h - heights[i]) * (new_i);
                 }
-
-                cout << j << ' ' << drains[j] << endl;
             }
 
-            if (added_h != new_h) {
-                drains.push_back(0);
-                max_h.push_back(0);
-                min_h.push_back(0);
+            sm += h - heights[i];
+            dp_l[i] = sm;
 
-                int j = drains.size() - 1;
+            rng.emplace_back(heights[i], i);
 
-                drains[j] += added_h-new_h;
-                
-                if (!min_h[j] && new_h != max_h[j]) {
-                    min_h[j] = max_h[j];
-                }
-
-                max_h[j] = new_h;
-
-                cout << "new " << j << ' ' << drains[j] << endl;
-            }
+            cout << dp_l[i] << endl;
         }
 
-        sort(drains.begin(), drains.end());
+        rng.clear();
+        sm = 0;
 
-        cout << (drains[drains.size() - 1] + drains[max(int(drains.size()) - 2, 0)]) << '\n';
+        for (int i = n-1; i>=0; --i) {
+            int new_i = i;
+
+            while (!rng.empty() && rng.back().first < heights[i]) {
+                pair<ll, ll> last_h = rng.back();
+                rng.pop_back();
+
+                if (!rng.empty()) {
+                    sm -= (h - last_h.first) * (rng.back().second - new_i - 1);
+                    sm += (h - heights[i]) * (rng.back().second - new_i - 1);
+
+                    new_i = last_h.second;
+                } else {
+                    cout << "sum: " << sm << endl;
+                    sm -= (h - last_h.first) * (n-new_i-1);
+                    sm += (h - heights[i]) * (n-new_i-1);
+
+                    cout << "add: " << (h - heights[i]) * (n-new_i-1) << endl;
+                }
+            }
+
+            sm += h - heights[i];
+            dp_r[i] = sm;
+
+            rng.emplace_back(heights[i], i);
+
+            cout << dp_r[i] << endl;
+        }
+
     }
 
     return 0;
