@@ -20,7 +20,6 @@ int32_t main() {
         vector<ll> rng;
 
         vector<ll> heights(n);
-        vector<ll> possible_drains;
 
         for (int i = 0; i<n; ++i) {
             cin >> heights[i];
@@ -29,16 +28,12 @@ int32_t main() {
                 rng.pop_back();
             }
 
-            if ((rng.empty() && i > 0) || (i - rng.back() > 0)) {
-                possible_drains.push_back(i-1);
-            }
-
             dp_l[i] = (i - (!rng.empty() ? rng.back() : -1)) * (h - heights[i]) 
                 + (!rng.empty() ? dp_l[rng.back()] : 0);
 
             rng.push_back(i);
 
-            cout << dp_l[i] << endl;
+            // cout << dp_l[i] << endl;
         }
 
         rng.clear();
@@ -51,26 +46,47 @@ int32_t main() {
             dp_r[i] = ((!rng.empty() ? rng.back() : n) - i) * (h - heights[i])
                 + (!rng.empty() ? dp_r[rng.back()] : 0);
 
-            rng.emplace_back(i);
+            rng.push_back(i);
 
-            cout << dp_r[i] << endl;
+            // cout << dp_r[i] << endl;
         }
 
 
         ll res = max(dp_l[n-1], dp_r[0]);
+        // cout << "dp: " << res << endl;
 
         for (int i = 0; i<n; ++i) {
-            ll max_idx = -1;
-            ll max_cost = 0;
+            heights[i] = h - heights[i];
+        }
 
-            if (i == 1 || i == n-2) {
-                res = max(res, dp_l[i-1] + dp_r[i]);
-            }
-            
-            for (int j = i+2; j<n; ++j) {
-                
+        for (int i = 0; i<n; ++i) {
+            ll max_idx = i;
+            ll max_cost = (max_idx < n) 
+                ? (dp_l[max_idx] + dp_r[max_idx] - heights[max_idx]) 
+                : 0;
+
+            ll c1 = dp_l[i] + dp_r[i] - heights[i];
+            // cout << c1 << endl;
+
+            for (int j = i; j<n; ++j) {
+                if (heights[max_idx] > heights[j]) {
+                    max_idx = j;
+                    
+                    max_cost = dp_r[max_idx] + dp_l[max_idx] - heights[max_idx];
+                }
+
+                // cout << "cost: " << max_cost << endl;
+
+                ll c2 = dp_l[j] + dp_r[j] - heights[j];
+
+                res = max(res, c1 + c2 - max_cost);
+
+                // cout << res << endl;
+                // cout << c1 << ' ' << c2 << " idx: " << i << ' ' << j << endl;
             }
         }
+
+        cout << res << '\n';
 
     }
 
