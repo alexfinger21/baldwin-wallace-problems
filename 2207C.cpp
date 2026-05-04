@@ -20,12 +20,17 @@ int32_t main() {
         vector<ll> rng;
 
         vector<ll> heights(n);
+        vector<ll> possible_drains;
 
         for (int i = 0; i<n; ++i) {
             cin >> heights[i];
 
             while (!rng.empty() && heights[rng.back()] < heights[i]) {
                 rng.pop_back();
+            }
+
+            if ((rng.empty() && i > 0) || (i - rng.back() > 0)) {
+                possible_drains.push_back(i-1);
             }
 
             dp_l[i] = (i - (!rng.empty() ? rng.back() : -1)) * (h - heights[i]) 
@@ -43,13 +48,28 @@ int32_t main() {
                 rng.pop_back();
             }
 
-
             dp_r[i] = ((!rng.empty() ? rng.back() : n) - i) * (h - heights[i])
                 + (!rng.empty() ? dp_r[rng.back()] : 0);
 
             rng.emplace_back(i);
 
             cout << dp_r[i] << endl;
+        }
+
+
+        ll res = max(dp_l[n-1], dp_r[0]);
+
+        for (int i = 0; i<n; ++i) {
+            ll max_idx = -1;
+            ll max_cost = 0;
+
+            if (i == 1 || i == n-2) {
+                res = max(res, dp_l[i-1] + dp_r[i]);
+            }
+            
+            for (int j = i+2; j<n; ++j) {
+                
+            }
         }
 
     }
