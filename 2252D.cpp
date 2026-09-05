@@ -14,44 +14,41 @@ int32_t main() {
         cin >> n;
 
         vector<ll> a(n);
+        vector<ll> diff_array(n-1);
 
         for (int i = 0; i<n; ++i) {
              cin >> a[i];
         }
 
-        bool changed = true;
-        int first_changed = 0;
-        int last_changed = n-1;
+        int queue_idx = 0;
+        vector<int> breaks;
 
-        while (changed) {
-            changed = false;
-
-            for (int i = max(1, first_changed); i<n-1; ++i) {
-                if ((a[i-1] & 1) == (a[i+1] & 1)) {
-                    if ((a[i-1] + a[i+1] - a[i]) < a[i]) {
-                        a[i] = a[i-1] + a[i+1] - a[i];
-                        changed = true;
-                        last_changed = i + 2;
-                    }
-                }
-            }
-
-            for (int i = min(last_changed, n-2); i>0; --i) {
-                if ((a[i-1] & 1) == (a[i+1] & 1)) {
-                    if ((a[i-1] + a[i+1] - a[i]) < a[i]) {
-                        a[i] = a[i-1] + a[i+1] - a[i];
-                        changed = true;
-                        first_changed = i - 2;
-                    }
-                }
+        for (int i = 0; i<n-1; ++i) {
+            diff_array[i] = a[i+1] - a[i];
+            if (i > 0 && ((diff_array[i-1] & 1) != (diff_array[i] & 1))) {
+                breaks.push_back(i-1);
             }
         }
 
-        for (int i = 0; i<n; ++i) {
-            cout << a[i] << ' ';
+        int last_idx = 0;
+        for (int i = 0; i<breaks.size(); ++i) {
+            sort(diff_array.begin() + last_idx, diff_array.begin() + breaks[i] + 1);
+
+            last_idx = breaks[i] + 1;
+        }
+
+        sort(diff_array.begin() + last_idx, diff_array.end());
+
+        ll curr_val = a[0];
+        cout << a[0] << ' ';
+
+        for (int i = 0; i<n-1; ++i) {
+            curr_val = curr_val + diff_array[i];
+            cout << (curr_val) << ' ';
         }
 
         cout << '\n';
+
     }
 
     return 0;
