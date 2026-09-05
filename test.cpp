@@ -1,29 +1,23 @@
 #include <bits/stdc++.h>
+#include "test.hpp"
 
 using ll=long long;
 using namespace std;
 
-int32_t main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    int t;
-    cin >> t;
+struct test {
+     int i;
+     int b;
 
-    while (t--) {
-        ll n;
+     test() {
+          i = 3;
+          b = 3;
+     }
+};
 
-        cin >> n;
+int main() {
+     test t;
+     test t2{};
 
-        vector<ll> dp(n+1);
-
-        dp[0] = 1;
-        dp[1] = 1;
-        for (int i = 2; i<=n; ++i) {
-            dp[i] = dp[i-1] + dp[i-2];
-        }
-
-        cout << dp[n] << '\n';
-    }
-
-    return 0;
+     cout << t.b << endl;
+     cout << t2.b << endl;
 }
