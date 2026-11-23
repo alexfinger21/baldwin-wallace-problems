@@ -13,8 +13,6 @@ int32_t main() {
         int l, n;
         cin >> l >> n;
 
-        vector<vector<int>> schedules(n);
-
         vector<int> res(1440);
 
         for (int i = 0; i<n; ++i) {
@@ -26,6 +24,9 @@ int32_t main() {
                 int end;
 
                 cin >> start >> end;
+
+                --start;
+                --end;
 
                 if (res[end]) {
                     end = res[end] - 1;
