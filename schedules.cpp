@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <bits/stdc++.h>
 
 using ll=long long;
@@ -22,27 +21,69 @@ int32_t main() {
             int sch;
             cin >> sch;
 
-            schedules[i] = vector<int>(sch*2);
-
             for (int j = 0; j<sch; ++j) {
-                cin >> schedules[i][j*2];
-                cin >> schedules[i][j*2+1];
-            }
-        }
+                int start;
+                int end;
 
-        for (int i = 1; i<n; ++i) {
-            for (int j = 0; j<schedules[0].size()/2; ++j) {
-                int start = schedules[i][j*2 - 1] - 1;
-                int end = schedules[i][j*2 + 1] - 1;
+                cin >> start >> end;
 
                 if (res[end]) {
-                    end = res[end - 1];
+                    end = res[end] - 1;
                 } 
 
                 if (res[start]) {
-                   res[start] = end;
+                    start = res[start] - 1;
+                }
+
+                int k = start;
+
+                while (k <= end && res[k] <= end) {
+                    int new_k = k;
+
+                    if ((res[k] == k + 1) || !res[k]) {
+                        new_k = k + 1;
+                    } else {
+                        new_k = res[k] - 1;
+                    }
+
+                    res[k] = end + 1;
+
+                    k = new_k;
                 }
             }
+        }
+
+        int window_cnt = 0;
+        bool found = false;
+
+        for (int i = 0; i<res.size(); ++i) {
+            if (!res[i]) {
+                ++window_cnt;
+            } else {
+                // cout << i << endl;
+                // cout << "res " << res[i] - 1 << endl;
+                window_cnt = 0;
+
+                if (i != res[i] - 1) {
+                    i = res[i] - 2;
+                }
+            }
+
+            if (window_cnt == l) {
+                found = true;
+                break;
+            }
+        }
+
+        for (int i = 0; i<res.size(); ++i) {
+            cout << res[i];
+        }
+        cout << endl;
+
+        if (found) {
+            cout << "yes\n";
+        } else {
+            cout << "no\n";
         }
     }
 
